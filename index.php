@@ -97,6 +97,8 @@
               <select type="text" class="form-control" name="tipoImp" id="tipo_imp" placeholder="Marca disco">
                 <option value="AGUA">AGUA</option>
                 <option value="GAS">GAS</option>
+                <option value="IMPUESTO INMOBILIARIO">IMPUESTO INMOBILIARIO</option>
+                <option value="TASAS MUNICIPALES">TASAS MUNICIPALES</option>
                 <option value="INTERNET">INTERNET</option>
                 <option value="LUZ">LUZ</option>
               </select>
@@ -164,7 +166,7 @@
 
 
 
-  <!-- Modal Editar-->
+  <!-- Modal Editar Impuesto-->
   <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
@@ -175,8 +177,8 @@
 
         <form name="formSubirPresupuestos" action="ajax/editar.php" id="formEditarImpuestos" enctype="multipart/form-data" method="POST">
           <div class="modal-body">
-            <input type="text" name="idImpEdit" id="id_imp_edit" value="">
-            <input type="text" name="tiene_acta" id="tieneActa" value="">
+            <input type="text" hidden="true" name="idImpEdit" id="id_imp_edit" value="">
+            <input type="text" hidden="true" name="tiene_acta" id="tieneActa" value="">
             <div class="mb-3">
               <label for="nombre_imp_edit" class="form-label">Nombre Impuesto</label>
               <input type="text" class="form-control" name="nombreImpEdit" id="nombre_imp_edit">
@@ -192,6 +194,8 @@
               <select type="text" class="form-control" name="tipoImpEdit" id="tipo_imp_edit" placeholder="Marca disco">
                 <option value="AGUA">AGUA</option>
                 <option value="GAS">GAS</option>
+                <option value="IMPUESTO INMOBILIARIO">IMPUESTO INMOBILIARIO</option>
+                <option value="TASAS MUNICIPALES">TASAS MUNICIPALES</option>
                 <option value="INTERNET">INTERNET</option>
                 <option value="LUZ">LUZ</option>
               </select>
@@ -244,6 +248,5 @@
 
     trearImpuestos();
     traerUsuarios();
-
   })
 </script>

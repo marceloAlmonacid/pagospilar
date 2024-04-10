@@ -35,7 +35,7 @@ function trearImpuestos() {
           }
 
           cards +=
-            '<li class="list-group-item d-flex justify-content-between lh-sm"> <div> <h6 class="my-0">' +
+            '<li class="list-group-item d-flex justify-content-between lh-sm"> <div> <h6 class="my-0 ml-1">' +
             js[i].nombre_imp +
             '</h6> <h6 class="my-0" style="display: none;">' +
             js[i].id_imp +
@@ -140,73 +140,84 @@ function trearImpuestos() {
   });
 }
 
+
 //TRAER USUARIOS
 function traerUsuarios() {
   const action = "buscar";
   $.ajax({
-    url: "../ajax/traerUsuarios.php",
-    type: "POST",
-    async: true,
-    data: {
-      action: action,
-    },
-    beforeSend: function () {},
+      url: "../ajax/traerUsuarios.php",
+      type: "POST",
+      data: { action: action },
+      beforeSend: function () {},
+      success: function (response) {
+          if (response.status && response.status === "notData") {
+              // Manejo cuando no hay datos
+          } else {
+              var js = JSON.parse(response);
+              var usuarios = {};
 
-    success: function (response) {
-      if (response.status && response.status === "notData") {
-      } else {
-        var js = JSON.parse(response);
-        var cards = "";
-        var cards1 = "";
-        var sumaCostoImp = 0;
+              // Agrupar datos por usuario
+              js.forEach(function (item) {
+                  if (!usuarios[item.id_usuario]) {
+                      usuarios[item.id_usuario] = {
+                          nombre: item.nombre_usuario,
+                          impuestos: []
+                      };
+                  }
+                  usuarios[item.id_usuario].impuestos.push({
+                      nombre: item.nombre_imp,
+                      monto: item.monto
+                  });
+              });
 
-        for (var i = 0; i < js.length; i++) {
-            sumaCostoImp += parseFloat(js[i].monto);
-          cards +=
-            '<div class="accordion-item"> <h2 class="accordion-header"> <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
-            js[i].id_usuario +
-            '" aria-expanded="false" aria-controls="flush-collapse' +
-            js[i].id_usuario +
-            '">' +
-            js[i].nombre_usuario +
-            '</button> </h2> <div id="flush-collapse' +
-            js[i].id_usuario +
-            '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"> <div class="accordion-body"><ul class="list-group mb-3 col-lg-11" > <li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' +js[i].nombre_imp +
-            '</h6>  <span id="cost1" class="text-muted ">$' +js[i].monto +
-            '</span> </li>   <li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span id="cost1" class="text-bold ">Total: $' +
-            sumaCostoImp +
-            '</span> </li></ul>     <div id="imp' +
-            js[i].id_usuario +
-            '"> </div> </div> </div> </div>';
+              // Generar HTML para cada usuario
+              var cards = "";
+              var cards1 = "";
+              for (var id in usuarios) {
+                  var usuario = usuarios[id];
+                  var sumaCostoImp = 0;
 
-          cards1 +=
-            '<input type="checkbox" class="btn-check" id="btn-check-' +
-            js[i].id_usuario +
-            '" data-id="' +
-            js[i].id_usuario +
-            '" autocomplete="off">' +
-            '<label class="btn btn-outline-success" for="btn-check-' +
-            js[i].id_usuario +
-            '">' +
-            js[i].nombre_usuario +
-            "</label>";
-        }
+                  // Calcula la suma total de impuestos por usuario
+                  usuario.impuestos.forEach(function (impuesto) {
+                      sumaCostoImp += parseFloat(impuesto.monto);
+                  });
 
-        $("#accordionFlushExample").html(cards);
-        $("#listaUsu").html(cards1);
+                  // Generar acordeón para cada usuario
+                  cards += '<div class="accordion-item"> <h2 class="accordion-header"> <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
+                      id + '" aria-expanded="false" aria-controls="flush-collapse' +
+                      id + '">' +
+                      usuario.nombre + '</button> </h2> <div id="flush-collapse' +
+                      id + '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"> <div class="accordion-body"><ul class="list-group mb-3 col-lg-11" >';
+
+                  // Agregar los impuestos y montos al acordeón
+                  usuario.impuestos.forEach(function (impuesto) {
+                      cards += '<li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' + impuesto.nombre +
+                          '</h6>  <span class="text-muted ">$' + impuesto.monto +
+                          '</span> </li>';
+                  });
+
+                  // Agregar el total
+                  cards += '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span class="text-bold ">Total: $' +
+                      sumaCostoImp + '</span> </li></ul> <div id="imp' + id + '"> </div> </div> </div> </div>';
+
+                  // Crear checkbox para cada usuario
+                  cards1 += '<input type="checkbox" class="btn-check" id="btn-check-' +
+                      id + '" data-id="' + id + '" autocomplete="off">' +
+                      '<label class="btn btn-outline-success" for="btn-check-' + id + '">' +
+                      usuario.nombre + "</label>";
+              }
+
+              // Actualizar el HTML de la página
+              $("#accordionFlushExample").html(cards);
+              $("#listaUsu").html(cards1);
+          }
+      },
+      error: function (error) {
+          console.log(error);
       }
-    },
-    error: function (error) {
-      console.log(error);
-    },
   });
 }
 
-function traerMontos(dato){
-    // alert(dato);
-
-    $("#imp"+dato).html(dato);
-}
 
 
 function obtenerUsuariosSeleccionados() {
