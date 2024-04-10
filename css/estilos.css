@@ -1,0 +1,50 @@
+.icon-button {
+    border: none;
+    background-color: transparent;
+    cursor: pointer;
+    padding: 10px; /* Ajusta el relleno según necesites */
+    border-radius: 5px; /* Opcional: para bordes redondeados */
+    margin-right: 5px;
+  }
+  
+  .icon-button img {
+    width: 24px; /* O ajusta al tamaño que prefieras */
+    height: auto; /* Mantiene la relación de aspecto */
+  }
+  
+  /* Opcional: Cambio de estilo al pasar el mouse */
+  /* .icon-button:hover {
+    background-color: #f0f0f0;
+  } */
+
+.menu-contextual {
+    border: 1px solid #ddd;
+    background-color: #ffffff;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    z-index: 1000;
+    width: 200px; /* O ajusta según el espacio necesario */
+}
+
+.menu-contextual ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.menu-contextual ul li {
+    padding: 10px;
+    border-bottom: 1px solid #eee;
+    cursor: pointer;
+    text-align: center;
+}
+
+.menu-contextual ul li:hover {
+    background-color: #f6f6f6;
+}
+
+.menu-contextual ul li:last-child {
+    border-bottom: none;
+}
+
