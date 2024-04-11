@@ -192,7 +192,7 @@ function traerUsuarios() {
                   // Agregar los impuestos y montos al acordeón
                   usuario.impuestos.forEach(function (impuesto) {
                       cards += '<li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' + impuesto.nombre +
-                          '</h6>  <span class="text-bold " style="color: red;">$' + impuesto.monto +
+                          '</h6>  <span class="text-bold " style="color: black;">$' + impuesto.monto +
                           '</span> </li>';
                   });
 
