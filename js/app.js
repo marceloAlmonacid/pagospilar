@@ -192,12 +192,12 @@ function traerUsuarios() {
                   // Agregar los impuestos y montos al acordeón
                   usuario.impuestos.forEach(function (impuesto) {
                       cards += '<li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' + impuesto.nombre +
-                          '</h6>  <span class="text-muted ">$' + impuesto.monto +
+                          '</h6>  <span class="text-bold " style="color: red;">$' + impuesto.monto +
                           '</span> </li>';
                   });
 
                   // Agregar el total
-                  cards += '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span class="text-bold ">Total: $' +
+                  cards += '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span class="text-bold " style="color: red;">Total: $' +
                       sumaCostoImp + '</span> </li></ul> <div id="imp' + id + '"> </div> </div> </div> </div>';
 
                   // Crear checkbox para cada usuario
@@ -217,7 +217,6 @@ function traerUsuarios() {
       }
   });
 }
-
 
 
 function obtenerUsuariosSeleccionados() {
