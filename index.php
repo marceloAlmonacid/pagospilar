@@ -53,8 +53,8 @@
         <button class="btn btn-success d-inline btn-sm" style="margin-right: 10px; " data-bs-toggle="modal" data-bs-target="#modalAgregar">Agregar Impuesto</button>
         <button class="btn btn-success d-inline mr-auto btn-sm" data-bs-toggle="modal" data-bs-target="#modalAgregar">Agregar Usuario</button>
       </div> -->
-      <div class="py-5 text-center">
-        <h4 class=" mb-5" id="costoTotal">
+      <div class="py-3 text-center">
+        <h4 class=" mb-2" id="costoTotal">
 
         </h4>
         
@@ -68,7 +68,7 @@
      
 
       <div class="py-5 text-center">
-      <h4 class=" mb-5" id="costoTotal" style="color: brown;">Facturas</h4>
+      <h4 class=" mb-3" id="costoTotal" style="color: brown;">Facturas</h4>
         <ul class="list-group mb-3">
           <div id="tabla"></div>
         </ul>
