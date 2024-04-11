@@ -57,9 +57,7 @@
         <h4 class=" mb-5" id="costoTotal">
 
         </h4>
-        <ul class="list-group mb-3">
-          <div id="tabla"></div>
-        </ul>
+        
       </div>
 
 
@@ -67,7 +65,14 @@
       <div class="accordion accordion-flush" id="accordionFlushExample">
 
       </div>
+     
 
+      <div class="py-5 text-center">
+      <h4 class=" mb-5" id="costoTotal" style="color: brown;">Facturas</h4>
+        <ul class="list-group mb-3">
+          <div id="tabla"></div>
+        </ul>
+      </div>
 
 
     </main>

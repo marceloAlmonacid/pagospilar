@@ -51,12 +51,12 @@ function trearImpuestos() {
 
         }
         cards1 +=
-          '<span class="text-primary">Pago total mes: $' +
-          sumaCosto.toFixed(2).toLocaleString();
-        +"</span>";
+          '<span class="text-primary">Total del mes: <b>$' +
+         sumaCosto.toFixed(2).toLocaleString();
+        +'</b></span>';
 
         cards2 +=
-          '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span id="cost1" class="text-bold ">Total: $' +
+          '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span id="cost1"class="bold">Total: $' +
           sumaCostoImp +
           '</span> </li></ul> ';
 
