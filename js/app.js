@@ -43,22 +43,21 @@ function trearImpuestos() {
             js[i].proveedor_imp +
             '</small> </div> <div class="d-flex align-items-center"> ' +
             ruta +
-            ' <span class="text-muted">$' +
+            ' <span class="gif-container"></span> <span class="text-muted">$' +
             js[i].costo_imp +
             "</span> </div> </li>";
 
           sumaCosto += parseFloat(js[i].costo_imp);
-
         }
         cards1 +=
           '<span class="text-primary">Total del mes: <b>$' +
-         sumaCosto.toFixed(2).toLocaleString();
-        +'</b></span>';
+          sumaCosto.toFixed(2).toLocaleString();
+        +"</b></span>";
 
         cards2 +=
           '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span id="cost1"class="bold">Total: $' +
           sumaCostoImp +
-          '</span> </li></ul> ';
+          "</span> </li></ul> ";
 
         $("#tabla").html(cards);
 
@@ -122,8 +121,13 @@ function trearImpuestos() {
           });
 
           $("#pagado").on("click", function () {
-            alert("Pagado");
-            // Aquí va tu lógica para marcar como pagado
+            // var gifContainer = $(this).prev(".gif-container");
+            // gifContainer.html(
+            //   '<img src="../img/ok.gif" style="width: 20px; height: 20px;">'
+            // );
+            // setTimeout(function () {
+            //   gifContainer.html(""); // Esto limpiará el GIF después de unos segundos, opcional.
+            // }, 3000); // Muestra el GIF durante 3 segundos.
           });
 
           // Evita la propagación del evento (opcional, dependiendo de tu caso de uso)
@@ -140,84 +144,118 @@ function trearImpuestos() {
   });
 }
 
-
 //TRAER USUARIOS
 function traerUsuarios() {
   const action = "buscar";
   $.ajax({
-      url: "../ajax/traerUsuarios.php",
-      type: "POST",
-      data: { action: action },
-      beforeSend: function () {},
-      success: function (response) {
-          if (response.status && response.status === "notData") {
-              // Manejo cuando no hay datos
-          } else {
-              var js = JSON.parse(response);
-              var usuarios = {};
+    url: "../ajax/traerUsuarios.php",
+    type: "POST",
+    data: { action: action },
+    beforeSend: function () {},
+    success: function (response) {
+      if (response.status && response.status === "notData") {
+        // Manejo cuando no hay datos
+      } else {
+        var js = JSON.parse(response);
+        var usuarios = {};
 
-              // Agrupar datos por usuario
-              js.forEach(function (item) {
-                  if (!usuarios[item.id_usuario]) {
-                      usuarios[item.id_usuario] = {
-                          nombre: item.nombre_usuario,
-                          impuestos: []
-                      };
-                  }
-                  usuarios[item.id_usuario].impuestos.push({
-                      nombre: item.nombre_imp,
-                      monto: item.monto
-                  });
-              });
-
-              // Generar HTML para cada usuario
-              var cards = "";
-              var cards1 = "";
-              for (var id in usuarios) {
-                  var usuario = usuarios[id];
-                  var sumaCostoImp = 0;
-
-                  // Calcula la suma total de impuestos por usuario
-                  usuario.impuestos.forEach(function (impuesto) {
-                      sumaCostoImp += parseFloat(impuesto.monto);
-                  });
-
-                  // Generar acordeón para cada usuario
-                  cards += '<div class="accordion-item"> <h2 class="accordion-header"> <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
-                      id + '" aria-expanded="false" aria-controls="flush-collapse' +
-                      id + '">' +
-                      usuario.nombre + '</button> </h2> <div id="flush-collapse' +
-                      id + '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"> <div class="accordion-body"><ul class="list-group mb-3 col-lg-11" >';
-
-                  // Agregar los impuestos y montos al acordeón
-                  usuario.impuestos.forEach(function (impuesto) {
-                      cards += '<li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' + impuesto.nombre +
-                          '</h6>  <span class="text-bold " style="color: black;">$' + impuesto.monto +
-                          '</span> </li>';
-                  });
-
-                  // Agregar el total
-                  cards += '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span class="text-bold " style="color: red;">Total: $' +
-                      sumaCostoImp + '</span> </li></ul> <div id="imp' + id + '"> </div> </div> </div> </div>';
-
-                  // Crear checkbox para cada usuario
-                  cards1 += '<input type="checkbox" class="btn-check" id="btn-check-' +
-                      id + '" data-id="' + id + '" autocomplete="off">' +
-                      '<label class="btn btn-outline-success" for="btn-check-' + id + '">' +
-                      usuario.nombre + "</label>";
-              }
-
-              // Actualizar el HTML de la página
-              $("#accordionFlushExample").html(cards);
-              $("#listaUsu").html(cards1);
+        // Agrupar datos por usuario
+        js.forEach(function (item) {
+          if (!usuarios[item.id_usuario]) {
+            usuarios[item.id_usuario] = {
+              nombre: item.nombre_usuario,
+              impuestos: [],
+            };
           }
-      },
-      error: function (error) {
-          console.log(error);
+          usuarios[item.id_usuario].impuestos.push({
+            nombre: item.nombre_imp,
+            monto: item.monto,
+          });
+        });
+
+        // Generar HTML para cada usuario
+        var cards = "";
+        var cards1 = "";
+        for (var id in usuarios) {
+          var usuario = usuarios[id];
+          var sumaCostoImp = 0;
+
+          // Calcula la suma total de impuestos por usuario
+          usuario.impuestos.forEach(function (impuesto) {
+            sumaCostoImp += parseFloat(impuesto.monto);
+          });
+
+          // Generar acordeón para cada usuario
+          // cards +=
+          //   '<div class="accordion-item"> <h2 class="accordion-header"> <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
+          //   id +
+          //   '" aria-expanded="false" aria-controls="flush-collapse' +
+          //   id +
+          //   '">' +
+          //   usuario.nombre +
+          //   '</button> </h2> <div id="flush-collapse' +
+          //   id +
+          //   '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"> <div class="accordion-body"><ul class="list-group mb-3 col-lg-11" >';
+          cards +=
+            '<div class="accordion-item">' +
+            '<h2 class="accordion-header">' +
+            '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
+            id +
+            '" aria-expanded="false" aria-controls="flush-collapse' +
+            id +
+            '">' +
+            '<img src="../img/' + usuario.nombre + '.png" alt="Imagen de ' + usuario.nombre + '" style="width: 50px; height: 50px; margin-right: 15px; border-radius: 50%;">' +
+            usuario.nombre +
+            '</button>' +
+            '</h2>' +
+            '<div id="flush-collapse' +
+            id +
+            '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">' +
+            '<div class="accordion-body"><ul class="list-group mb-3 col-lg-11" >';
+
+
+          // Agregar los impuestos y montos al acordeón
+          usuario.impuestos.forEach(function (impuesto) {
+            cards +=
+              '<li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' +
+              impuesto.nombre +
+              '</h6>  <span class="text-bold " style="color: black;">$' +
+              impuesto.monto +
+              "</span> </li>";
+          });
+
+          // Agregar el total
+          cards +=
+            '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span class="text-bold " style="color: red;">Total: $' +
+            sumaCostoImp +
+            '</span> </li></ul> <div id="imp' +
+            id +
+            '"> </div> </div> </div> </div>';
+
+          // Crear checkbox para cada usuario
+          cards1 +=
+            '<input type="checkbox" class="btn-check" id="btn-check-' +
+            id +
+            '" data-id="' +
+            id +
+            '" autocomplete="off">' +
+            '<label class="btn btn-outline-success" for="btn-check-' +
+            id +
+            '">' +
+            usuario.nombre +
+            "</label>";
+        }
+
+        // Actualizar el HTML de la página
+        $("#accordionFlushExample").html(cards);
+        $("#listaUsu").html(cards1);
       }
+    },
+    error: function (error) {
+      console.log(error);
+    },
   });
 }
-
 
 function obtenerUsuariosSeleccionados() {
   var usuariosSeleccionados = [];
@@ -230,35 +268,35 @@ function obtenerUsuariosSeleccionados() {
 //  DB INGRESO DE IMPUESTOS
 $(document).ready(function () {
   $("#formSubirImpuestos").submit(function (e) {
-      e.preventDefault();  // Detener la ejecución normal del formulario
+    e.preventDefault(); // Detener la ejecución normal del formulario
 
-      var formData = new FormData(this);  // Crear un objeto FormData con los datos del formulario
+    var formData = new FormData(this); // Crear un objeto FormData con los datos del formulario
 
-      // Recoger todos los checkboxes marcados de los usuarios y agregarlos al formData
-      $(".btn-check:checked").each(function() {
-        formData.append('usuariosSeleccionados[]', $(this).data('id'));
-      });
+    // Recoger todos los checkboxes marcados de los usuarios y agregarlos al formData
+    $(".btn-check:checked").each(function () {
+      formData.append("usuariosSeleccionados[]", $(this).data("id"));
+    });
 
-      $.ajax({
-        url: $(this).attr("action"),
-        type: "POST",
-        data: formData,
-        mimeType: "multipart/form-data",
-        contentType: false,
-        cache: false,
-        processData: false,
-        success: function (response) {
+    $.ajax({
+      url: $(this).attr("action"),
+      type: "POST",
+      data: formData,
+      mimeType: "multipart/form-data",
+      contentType: false,
+      cache: false,
+      processData: false,
+      success: function (response) {
         swal("Ok!", "Se creo el impuesto!", "success");
-          $("#modalAgregar").modal("hide");
+        $("#modalAgregar").modal("hide");
         //   alert("Impuesto y asignaciones guardadas con éxito!");
         //   location.reload(); // Opcional: recargar la página para ver los cambios
-            console.log(response);
-        },
-        error: function (jqXHR, textStatus, errorThrown) {
-          alert("Error al guardar la información");
-        }
-      });
+        console.log(response);
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        alert("Error al guardar la información");
+      },
     });
+  });
 
   $("#modalAgregar").on("hidden.bs.modal", function (e) {
     trearImpuestos();
