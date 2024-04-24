@@ -5,7 +5,6 @@ $con = conexion();
 
 date_default_timezone_set('America/Argentina/Buenos_Aires');
 
-// $idPC = $con->real_escape_string(htmlentities($_POST['id_PCu']));
 $idImp = $con->real_escape_string(htmlentities($_POST['idImpEdit']));
 $nombreImp = $con->real_escape_string(htmlentities($_POST['nombreImpEdit']));
 $proveedorImp = $con->real_escape_string(htmlentities($_POST['proveedorImpEdit']));
@@ -41,7 +40,6 @@ if ($file_name == '' || $file_name == null) {
                 mkdir($dir, 0777, true);
             }
             $file_tmp_name = $_FILES['facturaImpEdit']['tmp_name'];
-            // $new_name_file = 'files/' . date('Ymdhis') . '.' . $extension;
             $new_name_file = $dir . file_name($file_name) . '.' . $extension;
             if (copy($file_tmp_name, $new_name_file)) {
             }

@@ -1,3 +1,4 @@
+
 .icon-button {
     border: none;
     background-color: transparent;
@@ -11,11 +12,6 @@
     width: 24px; /* O ajusta al tamaño que prefieras */
     height: auto; /* Mantiene la relación de aspecto */
   }
-  
-  /* Opcional: Cambio de estilo al pasar el mouse */
-  /* .icon-button:hover {
-    background-color: #f0f0f0;
-  } */
 
 .menu-contextual {
     border: 1px solid #ddd;
@@ -46,5 +42,14 @@
 
 .menu-contextual ul li:last-child {
     border-bottom: none;
+}
+
+.total {
+  color: red; 
+}
+
+.totalPost {
+  color: green; 
+  font-weight: bold;
 }
 

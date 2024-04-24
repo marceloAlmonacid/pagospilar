@@ -52,7 +52,7 @@ function trearImpuestos() {
         cards1 +=
           '<span class="text-primary">Total del mes: <b>$' +
           sumaCosto.toFixed(2).toLocaleString();
-        +"</b></span>";
+        +'</b></span> ';
 
         cards2 +=
           '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span id="cost1"class="bold">Total: $' +
@@ -120,21 +120,11 @@ function trearImpuestos() {
             });
           });
 
-          $("#pagado").on("click", function () {
-            // var gifContainer = $(this).prev(".gif-container");
-            // gifContainer.html(
-            //   '<img src="../img/ok.gif" style="width: 20px; height: 20px;">'
-            // );
-            // setTimeout(function () {
-            //   gifContainer.html(""); // Esto limpiará el GIF después de unos segundos, opcional.
-            // }, 3000); // Muestra el GIF durante 3 segundos.
-          });
-
-          // Evita la propagación del evento (opcional, dependiendo de tu caso de uso)
+          // Evita la propagación del evento (opcional, dependiendo de caso de uso)
           return false;
         });
 
-        $("#costoTotal").html(cards1);
+        $("#costoTotal").html(cards1+'<img src="../img/coins.gif" alt="Info Icon" style="width: 40px; height: 40px; margin-right: 10px;">');
         $("#adriImp").html(cards2);
       }
     },
@@ -159,7 +149,6 @@ function traerUsuarios() {
         var js = JSON.parse(response);
         var usuarios = {};
 
-        // Agrupar datos por usuario
         js.forEach(function (item) {
           if (!usuarios[item.id_usuario]) {
             usuarios[item.id_usuario] = {
@@ -173,82 +162,104 @@ function traerUsuarios() {
           });
         });
 
-        // Generar HTML para cada usuario
         var cards = "";
-        var cards1 = "";
         for (var id in usuarios) {
           var usuario = usuarios[id];
           var sumaCostoImp = 0;
 
-          // Calcula la suma total de impuestos por usuario
           usuario.impuestos.forEach(function (impuesto) {
             sumaCostoImp += parseFloat(impuesto.monto);
           });
 
-          // Generar acordeón para cada usuario
-          // cards +=
-          //   '<div class="accordion-item"> <h2 class="accordion-header"> <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
-          //   id +
-          //   '" aria-expanded="false" aria-controls="flush-collapse' +
-          //   id +
-          //   '">' +
-          //   usuario.nombre +
-          //   '</button> </h2> <div id="flush-collapse' +
-          //   id +
-          //   '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample"> <div class="accordion-body"><ul class="list-group mb-3 col-lg-11" >';
           cards +=
-            '<div class="accordion-item">' +
-            '<h2 class="accordion-header">' +
-            '<button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse' +
-            id +
-            '" aria-expanded="false" aria-controls="flush-collapse' +
-            id +
-            '">' +
-            '<img src="../img/' + usuario.nombre + '.png" alt="Imagen de ' + usuario.nombre + '" style="width: 50px; height: 50px; margin-right: 15px; border-radius: 50%;">' +
-            usuario.nombre +
-            '</button>' +
-            '</h2>' +
-            '<div id="flush-collapse' +
-            id +
-            '" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">' +
-            '<div class="accordion-body"><ul class="list-group mb-3 col-lg-11" >';
+    `<div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse${id}" aria-expanded="false" aria-controls="flush-collapse${id}">
+            
+                <img src="../img/${usuario.nombre}.png" alt="Imagen de ${usuario.nombre}" id="imgUsu${id}" style="width: 50px; height: 50px; margin-right: 15px; border-radius: 50%;">
+                ${usuario.nombre}
+                <span id="status-${id}" class="status-text ms-auto pe-2"></span>
+                
+            </button>
+        </h2>
+        <div id="flush-collapse${id}" class="accordion-collapse collapse" data-bs-parent="#accordionFlushExample">
+            <div class="accordion-body">
+                <ul class="list-group mb-3 col-lg-11">`;
 
-
-          // Agregar los impuestos y montos al acordeón
           usuario.impuestos.forEach(function (impuesto) {
             cards +=
-              '<li class="list-group-item d-flex justify-content-between lh-sm">  <h6 class="my-1">' +
-              impuesto.nombre +
-              '</h6>  <span class="text-bold " style="color: black;">$' +
-              impuesto.monto +
-              "</span> </li>";
+              `<li class="list-group-item d-flex justify-content-between lh-sm">
+              <h6 class="my-1">${impuesto.nombre}</h6>
+              <div class="d-flex align-items-center">
+                <div id="gif-${id}-${impuesto.nombre}" class="gif-container" data-user-id="${id}" style="display: none; width: 20px; height: 20px;">
+
+
+
+                <img src="../img/ok.gif" id="gif${id}" alt="Cargando..." style="width: 100%; height: 100%;" />
+                  
+                </div>
+                <span class="" style="margin-left: 5px; color: black;">$${impuesto.monto}</span>
+              </div>
+            </li>`;
           });
 
-          // Agregar el total
           cards +=
-            '<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">  <h6 class="my-1"> </h6>  <span class="text-bold " style="color: red;">Total: $' +
-            sumaCostoImp +
-            '</span> </li></ul> <div id="imp' +
-            id +
-            '"> </div> </div> </div> </div>';
+            `<li class="list-group-item d-flex justify-content-between lh-sm" style="border: none;">
+                <div class="form-check form-switch">
+                  <input class="form-check-input pago-checkbox" type="checkbox" role="switch" id="flexSwitchCheckDefault-${id}">
+                  <label class="form-check-label" for="flexSwitchCheckDefault-${id}">Pago</label>
+                </div>
 
-          // Crear checkbox para cada usuario
-          cards1 +=
-            '<input type="checkbox" class="btn-check" id="btn-check-' +
-            id +
-            '" data-id="' +
-            id +
-            '" autocomplete="off">' +
-            '<label class="btn btn-outline-success" for="btn-check-' +
-            id +
-            '">' +
-            usuario.nombre +
-            "</label>";
+                  <div class="d-flex align-items-center">
+                    <div id="" class="gif-container1" data-user-id="${id}" style="display: none; width: 40px; height: 40px;">
+
+
+
+                    <img src="../img/aplauso.gif" id="aplauso${id}" alt="Cargando..." style="width: 100%; height: 100%;" />
+                      
+                    </div>
+                    <span class="total" id="total${id}" >Total: $${sumaCostoImp}</span>
+                  </div>
+                
+                
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>`;
         }
 
-        // Actualizar el HTML de la página
         $("#accordionFlushExample").html(cards);
-        $("#listaUsu").html(cards1);
+
+        // Añadido manejador de eventos para los checkboxes
+        $('.pago-checkbox').change(function() {
+          var checkboxId = this.id.replace('flexSwitchCheckDefault-', ''); // Extrae el ID del usuario directamente del ID del checkbox
+          var total = document.getElementById('total'+checkboxId);
+          var aplauso = document.getElementById('aplauso'+checkboxId);
+          var check = document.getElementById('gif'+checkboxId);
+          
+
+          total.classList.remove('animate__animated', 'animate__backInLeft', 'animate__wobble', 'animate-color');
+
+          if (this.checked) {
+            $(`.gif-container[data-user-id='${checkboxId}']`).show(); // Muestra todos los GIFs asociados con este usuario
+            
+            aplauso.setAttribute("src", "../img/aplauso.gif");
+            total.classList.add('animate__animated', 'animate__wobble');
+            total.addEventListener('animationend', () => {
+              total.classList.add('totalPost');
+              check.setAttribute("src", "../img/ok.gif");
+              $(`.gif-container1[data-user-id='${checkboxId}']`).show();
+              
+            });
+            
+          } else {
+            $(`.gif-container[data-user-id='${checkboxId}']`).hide(); // Oculta todos los GIFs
+            $(`.gif-container1[data-user-id='${checkboxId}']`).hide(); // Oculta todos los GIFs
+            total.classList.remove('totalPost');
+            total.classList.add('total');
+          }
+        });
       }
     },
     error: function (error) {
@@ -256,6 +267,8 @@ function traerUsuarios() {
     },
   });
 }
+
+
 
 function obtenerUsuariosSeleccionados() {
   var usuariosSeleccionados = [];
@@ -288,8 +301,6 @@ $(document).ready(function () {
       success: function (response) {
         swal("Ok!", "Se creo el impuesto!", "success");
         $("#modalAgregar").modal("hide");
-        //   alert("Impuesto y asignaciones guardadas con éxito!");
-        //   location.reload(); // Opcional: recargar la página para ver los cambios
         console.log(response);
       },
       error: function (jqXHR, textStatus, errorThrown) {
@@ -415,7 +426,6 @@ function obtenerDatosEdicion(dato) {
 $(document).ready(function () {
   $("#formEditarImpuestos").submit(function (e) {
     var formData = new FormData(this);
-    //   var esto = formData.get("id_Cela");
 
     if (window.FormData !== undefined) {
       var formObj = $(this);
@@ -432,7 +442,6 @@ $(document).ready(function () {
         success: function (data, textStatus, jqXHR) {
           swal("Ok!", "Se actualizaron los datos!", "success");
           $("#modalEditar").modal("hide");
-          //   trearImpuestos();
         },
         error: function (jqXHR, textStatus, errorThrown) {
           alert("mal");
@@ -453,4 +462,35 @@ function verFormData(formData) {
     contenido += key + ": " + value + "\n";
   }
   alert(contenido);
+}
+
+
+
+function animaUsuario(dato) {
+  var img = document.getElementById("imgUsu" + dato);
+  var h6Elements = document.querySelectorAll("#flush-collapse" + dato + " h6");
+  var spanElements = document.querySelectorAll("#flush-collapse" + dato + " span");
+
+  // Aplicar animación a la imagen
+  img.classList.add('animate__animated', 'animate__bounce');
+
+  // Ocultar inicialmente los elementos h6 y span
+  // h6Elements.forEach(element => element.style.opacity = 0);
+  spanElements.forEach(element => element.style.opacity = 0);
+
+  // Aplicar animación y mostrar los elementos h6
+  // h6Elements.forEach((element, index) => {
+  //   setTimeout(() => {
+  //     element.style.opacity = 1;
+  //     element.classList.add('animate__animated', 'animate__backInLeft');
+  //   }, 100 * index);  // Aumenta el retraso para cada h6
+  // });
+
+  // Aplicar animación y mostrar los elementos span
+  spanElements.forEach((element, index) => {
+    setTimeout(() => {
+      element.style.opacity = 1;
+      element.classList.add('animate__animated', 'animate__backInLeft');
+    }, 100 * (index + h6Elements.length));  // Asegurarse de que los spans se animan después de los h6
+  });
 }
