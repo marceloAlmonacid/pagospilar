@@ -245,6 +245,7 @@
       <li id="editar">Editar</li>
       <li id="eliminar">Eliminar</li>
       <li id="pagado">Pagado</li>
+      <li id="registrar">Registrar</li>
     </ul>
   </div>
 </body>
