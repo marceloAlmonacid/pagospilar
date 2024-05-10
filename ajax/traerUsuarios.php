@@ -8,7 +8,7 @@ if($_POST){
     if($_POST['action'] == 'buscar'){
 
         $arr = array();
-        $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, nombre_imp, monto FROM `usu_imp` 
+        $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, nombre_imp, monto, id_imp, pago FROM `usu_imp` 
         INNER JOIN usuarios ON usu_imp.id_usu1=usuarios.id_usuario
         INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp");
         if($query_select){
