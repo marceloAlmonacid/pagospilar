@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: web-service
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+  - type: database
+    name: db-service
+    plan: free
+    engine: mariadb
+    version: 10.4.21
+    databases:
+      - impuestos
+    user: root
+    password: IT2017petro

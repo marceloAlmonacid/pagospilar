@@ -10,13 +10,13 @@ services:
       DB_NAME: impuestos
     container_name: php_apache_imp
     ports:
-      - "8083:80"
+      - "80:80"
     volumes:
       - .:/var/www/html
     depends_on:
       - db
     restart: always
-    # command: /bin/sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf && apache2-foreground"
+    command: /bin/sh -c "echo 'ServerName localhost' >> /etc/apache2/apache2.conf && apache2-foreground"
 
   db:
     image: mariadb:10.4.21
@@ -46,7 +46,3 @@ services:
 
 volumes:
   db_data:
-
-
-
-
