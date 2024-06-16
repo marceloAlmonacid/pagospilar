@@ -18,6 +18,11 @@ function trearImpuestos() {
         var cards = "";
         var cards1 = "";
         var cards2 = '<ul class="list-group mb-3 col-lg-11" >';
+        // const fecha = new Date();
+        // const hoy = fecha.getDate();
+        // const mesActual = hoy.toLocaleString('default', { month: 'long' })
+        let mesActual = new Intl.DateTimeFormat('es-ES', { month: 'long'}).format(new Date());
+        
         var sumaCosto = 0;
         var sumaCostoImp = 0;
         var costoImp = 0;
@@ -49,8 +54,10 @@ function trearImpuestos() {
 
           sumaCosto += parseFloat(js[i].costo_imp);
         }
+        
+        
         cards1 +=
-          '<span class="text-primary">Total del mes: <b>$' +
+          '<span class="text-primary">Total de '+ mesActual +': <b>$' +
           sumaCosto.toFixed(2).toLocaleString();
         +"</b></span>";
 
@@ -260,23 +267,23 @@ function traerUsuarios() {
         </div>
       </div>`;
 
-          // Crear checkbox para cada usuario al ingresar un nuevo impuesto
-          cards1 +=
-            '<input type="checkbox" class="btn-check" id="btn-check-' +
-            id +
-            '" data-id="' +
-            id +
-            '" autocomplete="off">' +
-            '<label class="btn btn-outline-success" for="btn-check-' +
-            id +
-            '">' +
-            usuario.nombre +
-            "</label>";
+           //Crear checkbox para cada usuario al ingresar un nuevo impuesto
+          //cards1 +=
+            //'<input type="checkbox" class="btn-check" id="btn-check-' +
+            //id +
+            //'" data-id="' +
+            //id +
+            //'" autocomplete="off">' +
+            //'<label class="btn btn-outline-success" for="btn-check-' +
+            //id +
+            //'">' +
+            //usuario.nombre +
+            //"</label>";
         }
 
         // Actualizar el HTML de la página
         $("#accordionFlushExample").html(cards);
-        $("#listaUsu").html(cards1);
+        //$("#listaUsu").html(cards1);
 
         // Añadido manejador de eventos para los checkboxes
         $(".pago-checkbox").change(function () {
@@ -334,6 +341,9 @@ function traerUsuarios() {
     },
   });
 }
+
+
+
 
 function cargarPago(usuarioId, datosUsuario) {
   // Crear un objeto con los datos a enviar
@@ -408,6 +418,7 @@ $(document).ready(function () {
 
   $("#modalAgregar").on("hidden.bs.modal", function (e) {
     trearImpuestos();
+    traerUsuarios();
   });
 });
 

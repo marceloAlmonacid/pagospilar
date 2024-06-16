@@ -124,7 +124,7 @@
 
             <div class="mb-3" >
               <h6>Quienes pagaran este impuesto?</h6>
-              <div id="listaUsu">
+              <div style=" justify-content: center; display: flex; flex-wrap:wrap;" id="listaUsu">
 
               </div>
             </div>
@@ -257,5 +257,52 @@
 
     trearImpuestos();
     traerUsuarios();
+    botonesUsuarios();
   })
+
+  function botonesUsuarios(){
+   const action = "buscar";
+
+  $.ajax({
+    url: "../ajax/traerUsuariosBotones.php",
+    type: "POST",
+    data: { action: action },
+    beforeSend: function () {},
+    success: function (response) {
+      // console.log(response);
+      if (response.status && response.status === "notData") {
+        // Manejo cuando no hay datos
+      } else {
+        var js = JSON.parse(response);
+        var cards1 = "";
+
+          for (var i = 0; i < js.length; i++) {
+            
+            // js[i].nombre_imp
+            // Crear checkbox para cada usuario al ingresar un nuevo impuesto
+            cards1 +=
+              '<div class="mr-3"><input type="checkbox" class="btn-check" id="btn-check-' +
+              js[i].id_usuario +
+              '" data-id="' +
+              js[i].id_usuario +
+              '" autocomplete="off">' +
+              '<label class="btn btn-outline-success" for="btn-check-' +
+              js[i].id_usuario +
+              '">' +
+              js[i].nombre_usuario +
+              "</label></div>";
+
+          }
+
+        }
+         // Actualizar el HTML de la página
+         $("#listaUsu").html(cards1);
+
+    },
+    error: function (error) {
+      console.error("Error al enviar la solicitud de pago:", error);
+      alert("Hubo un problema al enviar el pago. Intenta nuevamente.");
+    }
+  });
+}
 </script>
