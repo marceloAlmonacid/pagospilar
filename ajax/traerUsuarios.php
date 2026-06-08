@@ -7,10 +7,14 @@ if($_POST){
 
     if($_POST['action'] == 'buscar'){
 
+        $mes = isset($_POST['mes']) ? mysqli_real_escape_string($conexion, $_POST['mes']) : date('m');
+        $anio = isset($_POST['anio']) ? mysqli_real_escape_string($conexion, $_POST['anio']) : date('Y');
+
         $arr = array();
-        $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, nombre_imp, monto, id_imp, pago FROM `usu_imp` 
+        $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, telefono, telefono2, telegram_id, nombre_imp, monto, id_imp, usu_imp.estado_pago as pago FROM `usu_imp` 
         INNER JOIN usuarios ON usu_imp.id_usu1=usuarios.id_usuario
-        INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp");
+        INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp
+        WHERE MONTH(imp.fecha_vencimiento_imp) = '$mes' AND YEAR(imp.fecha_vencimiento_imp) = '$anio'");
         if($query_select){
             $num_rows = mysqli_num_rows($query_select);
             if($num_rows > 0)

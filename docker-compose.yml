@@ -44,5 +44,17 @@ services:
       - db
     restart: always
 
+  whatsapp:
+    build:
+      context: ./whatsapp-bot
+      network: host
+    container_name: whatsapp_bot_imp
+    dns:
+      - 8.8.8.8
+      - 8.8.4.4
+    restart: always
+    volumes:
+      - ./whatsapp-bot/auth:/app/.wwebjs_auth
+
 volumes:
   db_data:

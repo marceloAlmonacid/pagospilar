@@ -7,8 +7,13 @@ if($_POST){
 
     if($_POST['action'] == 'buscar'){
 
+        $mes = isset($_POST['mes']) ? mysqli_real_escape_string($conexion, $_POST['mes']) : date('m');
+        $anio = isset($_POST['anio']) ? mysqli_real_escape_string($conexion, $_POST['anio']) : date('Y');
+
         $arr = array();
-        $query_select = mysqli_query($conexion, "SELECT * from imp ORDER BY id_imp DESC");
+        // Filtramos por el mes y año de vencimiento
+        $query_select = mysqli_query($conexion, "SELECT * FROM imp WHERE MONTH(fecha_vencimiento_imp) = '$mes' AND YEAR(fecha_vencimiento_imp) = '$anio' ORDER BY id_imp DESC");
+        
         if($query_select){
             $num_rows = mysqli_num_rows($query_select);
             if($num_rows > 0)

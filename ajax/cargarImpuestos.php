@@ -9,33 +9,55 @@ $proveedorImp = $con->real_escape_string(htmlentities($_POST['proveedorImp']));
 $fechaVencimientoImp = $con->real_escape_string(htmlentities($_POST['fechaVencimientoImp']));
 $costoImp = $con->real_escape_string(htmlentities($_POST['costoImp']));
 $tipoImp = $con->real_escape_string(htmlentities($_POST['tipoImp']));
-$file_name = $_FILES['facturaImp']['name'];
 
 $usuariosSeleccionados = isset($_POST['usuariosSeleccionados']) ? $_POST['usuariosSeleccionados'] : [];
 $numUsuarios = count($usuariosSeleccionados);
 $costoPorUsuario = $numUsuarios > 0 ? round($costoImp / $numUsuarios, 2) : 0;
 
-// Función para manejar la subida de archivos
+// Función para manejar la subida de archivos (Soporta PDF y Fotos)
 function file_upload() {
+    if(!isset($_FILES['facturaImp']) || $_FILES['facturaImp']['error'] == UPLOAD_ERR_NO_FILE) {
+        return null;
+    }
+
+    if ($_FILES['facturaImp']['error'] !== UPLOAD_ERR_OK) {
+        // Retornar un mensaje de error especial si hubo un problema al subir (ej: supera tamaño)
+        return "ERROR_UPLOAD_" . $_FILES['facturaImp']['error'];
+    }
+
     $file_name = $_FILES['facturaImp']['name'];
-    $file_type = $_FILES['facturaImp']['type'];
-    list($type, $extension) = explode('/', $file_type);
-    if ($extension === 'pdf') {
+    
+    // Lista de extensiones permitidas
+    $allowed_extensions = array('pdf', 'jpg', 'jpeg', 'png');
+    $file_extension = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+
+    if (in_array($file_extension, $allowed_extensions)) {
         $dir = '../facturas/';
         if (!file_exists($dir)) {
             mkdir($dir, 0777, true);
         }
         $file_tmp_name = $_FILES['facturaImp']['tmp_name'];
-        $new_name_file = $dir . file_name($file_name) . '.' . $extension;
+        // Generar nombre unico para no sobreescribir
+        $new_name_file = $dir . time() . '_' . rand(1000, 9999) . '.' . $file_extension;
+        
         if (move_uploaded_file($file_tmp_name, $new_name_file)) {
-            return $new_name_file;
+            // Devolver la ruta relativa sin el '../' para la BD, o como estaba antes
+            return substr($new_name_file, 3); 
+        } else {
+            return "ERROR_MOVE";
         }
+    } else {
+        return "ERROR_EXTENSION";
     }
-    return null;
 }
 
 // Verifica si se subió un archivo
 $new_name_file = file_upload();
+
+if (strpos($new_name_file, 'ERROR_') === 0) {
+    echo "Error al subir comprobante: " . $new_name_file;
+    exit;
+}
 
 $sql = "INSERT INTO imp (nombre_imp, proveedor_imp, fecha_vencimiento_imp, costo_imp, tipo_imp, ruta_comprobante_imp) VALUES ('$nombreImp', '$proveedorImp', '$fechaVencimientoImp', '$costoImp', '$tipoImp', '$new_name_file')";
 if ($con->query($sql)) {
@@ -46,19 +68,7 @@ if ($con->query($sql)) {
     }
     echo 'success';
 } else {
-    echo 'fail: ' . $con->error;
+    echo "Error: " . $sql . "<br>" . $con->error;
 }
-
-function file_name($string) {
-    $string = strtolower($string);
-    $find = array('á', 'é', 'í', 'ó', 'ú', 'ñ');
-    $repl = array('a', 'e', 'i', 'o', 'u', 'n');
-    $string = str_replace($find, $repl, $string);
-    $find = array(' ', '&', '\r\n', '\n', '+');
-    $string = str_replace($find, '-', $string);
-    $find = array('/[^a-z0-9\-<>]/', '/[\-]+/', '/<[^>]*>/');
-    $repl = array('', '-', '');
-    $string = preg_replace($find, $repl, $string);
-    return $string;
-}
+?>
 

@@ -1,308 +1,383 @@
+<?php
+session_start();
+$isAdmin = isset($_SESSION['admin']) && $_SESSION['admin'] === true;
+?>
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-bs-theme="dark">
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Servicios</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pagos Pilar - Dashboard</title>
   
-
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-  <!-- SweetAlert -->
-  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-
-
-
-  <link rel="stylesheet" href="../css/estilos.css">
-
-   <!-- Animate css -->
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Animate css -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+  
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-
-
-  <script src="../js/app.js"></script>
-
+  <link rel="stylesheet" href="css/estilos.css">
   <link rel="icon" href="img/favicon.ico" type="image/x-icon">
-  <link rel="shortcut icon" href="img/favicon.ico" type="image/x-icon">
 </head>
 
-<body class="bg-body-tertiary">
+<body class="sre-bg text-dark">
 
-  <div class="container">
-    <main>
-      <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-          <a class="navbar-brand" href="#"> </a>
-          <button class="navbar-toggler" type="button btn-sm" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNavDropdown">
-            <ul class="navbar-nav">
-              <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAgregar">Agregar Impuesto</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="modal" data-bs-target="#modalAgregarUsuario">Agregar Usuario</a>
-              </li>
-              
-            </ul>
-          </div>
+  <nav class="navbar navbar-expand-lg navbar-light bg-transparent border-bottom border-light-subtle mb-4">
+    <div class="container">
+      <ul class="navbar-nav me-auto flex-row gap-3">
+        <?php if($isAdmin): ?>
+        <li class="nav-item">
+          <a class="nav-link text-accent fw-bold text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#modalAgregar"><i class="fa-solid fa-file-invoice-dollar me-1"></i>Nuevo Gasto</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-accent fw-bold text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#modalAdministrarGastos" onclick="cargarListaGastos()"><i class="fa-solid fa-list-check me-1"></i>Administrar Gastos</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-accent fw-bold text-decoration-none" href="#" data-bs-toggle="modal" data-bs-target="#modalAgregarUsuario"><i class="fa-solid fa-user-plus me-1"></i>Nuevo Usuario</a>
+        </li>
+        <?php endif; ?>
+      </ul>
+      <div class="d-flex align-items-center">
+        <?php if($isAdmin): ?>
+          <span class="badge bg-success me-2 rounded-pill"><i class="fa-solid fa-shield-halved me-1"></i>Admin</span>
+          <button class="btn btn-sm btn-outline-info rounded-circle me-2" onclick="notificarTodos()" title="Notificar a Todos"><i class="fa-solid fa-paper-plane"></i></button>
+          <button class="btn btn-sm btn-outline-danger rounded-circle" onclick="logoutAdmin()" title="Cerrar Sesión"><i class="fa-solid fa-right-from-bracket"></i></button>
+        <?php else: ?>
+          <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="mostrarLogin()"><i class="fa-solid fa-lock me-1"></i>Entrar</button>
+        <?php endif; ?>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container pb-5">
+    
+    <!-- Título Principal -->
+    <div class="text-center mb-5 mt-3">
+      <h3 class="fw-bold text-accent shadow-text mb-0 d-flex align-items-center justify-content-center gap-2">
+        <span id="tituloMes">Total de mes:</span> 
+        <span id="montoTotalMes" class="ms-1">$0.00</span>
+        <i class="fa-solid fa-coins text-warning ms-1"></i>
+      </h3>
+    </div>
+
+    <!-- Filtro Mes y Año Oculto pero funcional -->
+    <div class="d-none">
+      <select id="filtroMes"><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select>
+      <select id="filtroAnio"><option value="2024">2024</option><option value="2025">2025</option><option value="2026">2026</option></select>
+    </div>
+
+    <!-- Grid de Usuarios (Estilo Retro SDO) -->
+    <div class="mb-5">
+      <div class="text-center mb-4">
+        <h5 class="fw-bold text-dark mb-1">Seleccioná tu usuario</h5>
+        <small class="text-secondary">Tocá tu avatar para ver lo que te toca pagar</small>
+      </div>
+      <div class="row row-cols-3 row-cols-md-4 row-cols-lg-5 g-3 justify-content-center" id="gridUsuarios">
+        <!-- Se inyecta por JS -->
+      </div>
+    </div>
+
+    <!-- Título Facturas -->
+    <div class="text-center mb-4 mt-5">
+      <h4 class="fw-bold text-danger mb-0">Facturas</h4>
+    </div>
+
+    <!-- Lista de Facturas Generales -->
+    <div class="card sre-card border-0 rounded-4 shadow-neon mb-5">
+      <div class="card-body p-0">
+        <ul class="list-group list-group-flush rounded-4" id="listaFacturas">
+          <!-- Se inyecta por JS -->
+        </ul>
+      </div>
+    </div>
+    
+  </div>
+
+  <!-- Offcanvas Usuario (Bottom Sheet) -->
+  <div class="offcanvas offcanvas-bottom sre-card text-dark" tabindex="-1" id="offcanvasUsuario" style="height: auto; max-height: 85vh; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+    <div class="offcanvas-header border-bottom border-light-subtle pb-3 pt-4">
+      <div class="d-flex align-items-center">
+        <div class="position-relative" id="offcanvasAvatarContainer">
+          <img src="" id="offcanvasAvatar" class="avatar-grid-img me-3" alt="" style="width: 55px; height: 55px;">
         </div>
-      </nav>
-      <div class="py-3 text-center">
-        <h4 class=" mb-2" id="costoTotal">
-
-        </h4>
-        
+        <div>
+          <h4 class="offcanvas-title fw-bold text-dark mb-0 d-flex align-items-center">
+            <span id="offcanvasNombreText">Usuario</span>
+            <?php if($isAdmin): ?>
+            <button class="btn btn-sm text-secondary ms-2 p-0" id="btnEditarUsuario" title="Editar Usuario"><i class="fa-solid fa-pen"></i></button>
+            <?php endif; ?>
+          </h4>
+          <span class="badge mt-1" id="offcanvasBadge"></span>
+        </div>
       </div>
-
-
-      <!-- Accordion detalles pagos -->
-      <div class="accordion accordion-flush" id="accordionFlushExample">
-
+      <button type="button" class="btn-close btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body pb-5">
+      <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+        <h6 class="text-secondary mb-0 fw-bold">Total a pagar:</h6>
+        <h3 class="text-accent shadow-text fw-bold mb-0" id="offcanvasTotal"></h3>
       </div>
-     
-
-      <div class="py-5 text-center">
-      <h4 class=" mb-3" id="costoTotal" style="color: brown;">Facturas</h4>
-        <ul class="list-group mb-3">
-          <div id="tabla"></div>
+      
+      <div class="bg-light rounded-4 p-2 mb-4 border border-light-subtle shadow-sm">
+        <ul class="list-group list-group-flush mb-0" id="offcanvasListaImpuestos">
+          <!-- Inyectado JS -->
         </ul>
       </div>
 
-
-    </main>
+      <div class="d-flex justify-content-center align-items-center pt-2 pb-4 gap-3">
+        <?php if($isAdmin): ?>
+        <button class="btn btn-warning rounded-pill d-none text-dark fw-bold shadow-sm px-3" id="btnWhatsappIndividual" onclick="notificarDeudaIndividual()"><i class="fa-brands fa-whatsapp fs-5 me-1"></i> Recordatorio</button>
+        <button class="btn btn-success rounded-pill d-none text-white fw-bold shadow-sm px-3" id="btnNotificarPagoConfirmado" onclick="notificarPagoConfirmado()"><i class="fa-brands fa-whatsapp fs-5 me-1"></i> Confirmar Pago</button>
+        <div class="form-check form-switch fs-5 mb-0">
+          <input class="form-check-input cursor-pointer" type="checkbox" role="switch" id="offcanvasSwitchPago">
+          <label class="form-check-label fw-bold ms-2 text-dark" for="offcanvasSwitchPago" id="offcanvasLabelPago">Marcar como pagado</label>
+        </div>
+        <?php endif; ?>
+      </div>
+    </div>
   </div>
 
-
-  <!-- Modal Agregar-->
-  <div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar impuesto</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- MODALES -->
+  
+  <!-- Modal Administrar Gastos -->
+  <div class="modal fade" id="modalAdministrarGastos" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content border-0 rounded-4 shadow-lg bg-light text-dark">
+        <div class="modal-header border-bottom border-light-subtle">
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-list-check me-2 text-accent"></i>Administrar Gastos (ABM)</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
         </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Impuesto</th>
+                  <th>Proveedor</th>
+                  <th>Vencimiento</th>
+                  <th>Costo</th>
+                  <th class="text-center">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tablaAdministrarGastosBody">
+                <!-- Se llena por AJAX -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer border-top border-light-subtle">
+          <button type="button" class="btn btn-secondary rounded-pill fw-bold px-4" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <!-- Modal Agregar Impuesto-->
+  <div class="modal fade" id="modalAgregar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content sre-card rounded-4 border-1 border-light-subtle">
+        <div class="modal-header border-bottom border-light-subtle">
+          <h5 class="modal-title fw-bold text-accent"><i class="fa-solid fa-plus-circle me-2"></i> Cargar Gasto/Impuesto</h5>
+          <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
+        </div>
         <form name="formSubirPresupuestos" action="ajax/cargarImpuestos.php" id="formSubirImpuestos" enctype="multipart/form-data" method="POST">
-          <div class="modal-body">
-            <div class="mb-3">
-              <label for="nombre_imp" class="form-label">Nombre Impuesto</label>
-              <input type="text" class="form-control" name="nombreImp" id="nombre_imp">
-            </div>
-
-            <div class="mb-3">
-              <label for="proveedor_imp" class="form-label">Proveedor:</label>
-              <input type="text" class="form-control" name="proveedorImp" id="proveedor_imp">
-            </div>
-
-            <div class="mb-3">
-              <label for="">Tipo impuesto:</label>
-              <select type="text" class="form-control" name="tipoImp" id="tipo_imp" placeholder="Marca disco">
-                <option value="AGUA">AGUA</option>
-                <option value="GAS">GAS</option>
-                <option value="IMPUESTO INMOBILIARIO">IMPUESTO INMOBILIARIO</option>
-                <option value="TASAS MUNICIPALES">TASAS MUNICIPALES</option>
-                <option value="INTERNET">INTERNET</option>
-                <option value="LUZ">LUZ</option>
-              </select>
-            </div>
-
-            <div class="mb-3">
-              <label for="fecha_vencimiento_imp">Fecha vencimiento:</label>
-              <input type="date" class="form-control" value="<?php echo date('Y-m-d'); ?>" name="fechaVencimientoImp" id="fecha_vencimiento_imp" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="costo_imp" class="form-label">Costo:</label>
-              <input type="number" class="form-control" step="any" name="costoImp" id="costo_imp">
-            </div>
-
-            <div class="mb-3" >
-              <h6>Quienes pagaran este impuesto?</h6>
-              <div style=" justify-content: center; display: flex; flex-wrap:wrap;" id="listaUsu">
-
+          <div class="modal-body text-dark">
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label text-secondary fw-bold">Servicio / Descripción</label>
+                <input type="text" class="form-control bg-light text-dark border-light-subtle" name="nombreImp" id="nombre_imp" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Proveedor</label>
+                <input type="text" class="form-control bg-light text-dark border-light-subtle" name="proveedorImp" id="proveedor_imp">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Tipo</label>
+                <select class="form-select bg-light text-dark border-light-subtle" name="tipoImp" id="tipo_imp">
+                  <option value="AGUA">Agua</option>
+                  <option value="GAS">Gas</option>
+                  <option value="IMPUESTO INMOBILIARIO">Inmobiliario</option>
+                  <option value="TASAS MUNICIPALES">Municipal</option>
+                  <option value="INTERNET">Internet</option>
+                  <option value="LUZ">Luz</option>
+                  <option value="OTROS">Otros</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Vencimiento</label>
+                <input type="date" class="form-control bg-light text-dark border-light-subtle" name="fechaVencimientoImp" id="fecha_vencimiento_imp" required>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Importe Total ($)</label>
+                <input type="number" class="form-control bg-light text-dark border-light-subtle" step="0.01" name="costoImp" id="costo_imp" required>
+              </div>
+              <div class="col-12 mt-3">
+                <label class="form-label text-secondary fw-bold d-block"><i class="fa-solid fa-users me-1"></i> ¿Quiénes lo pagan?</label>
+                <div class="d-flex flex-wrap gap-2" id="listaUsu">
+                  <!-- Checkboxes usuarios inyectados -->
+                </div>
+              </div>
+              <div class="col-12">
+                <label class="form-label text-secondary fw-bold">Comprobante (PDF/Img)</label>
+                <input class="form-control bg-light text-dark border-light-subtle" type="file" name="facturaImp" id="factura_imp">
               </div>
             </div>
-
-            <div class="form-group col-md-12">
-              <label for="factura_imp" class="form-label">Subir Factura:</label>
-              <input class="form-control" type="file" name="facturaImp" id="factura_imp">
-            </div>
-
-
-
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+          <div class="modal-footer border-top border-light-subtle">
+            <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-accent rounded-pill px-4"><i class="fa-solid fa-save me-1"></i> Guardar</button>
           </div>
         </form>
       </div>
     </div>
   </div>
-
 
   <!-- Modal Agregar Usuario-->
-  <div class="modal fade" id="modalAgregarUsuario" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Usuario</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <div class="modal fade" id="modalAgregarUsuario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content sre-card rounded-4 border-1 border-light-subtle">
+        <div class="modal-header border-bottom border-light-subtle">
+          <h5 class="modal-title fw-bold text-accent"><i class="fa-solid fa-user-plus me-2"></i> Nuevo Usuario</h5>
+          <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
         </div>
-
-        <form name="formSubirPresupuestos" action="ajax/cargarUsuario.php" id="formSubirUsuarios" enctype="multipart/form-data" method="POST">
-          <div class="modal-body">
+        <form action="ajax/cargarUsuario.php" id="formSubirUsuarios" method="POST">
+          <div class="modal-body text-dark">
             <div class="mb-3">
-              <label for="nombre_usu" class="form-label">Nombre Usuario</label>
-              <input type="text" class="form-control" name="nombreUsu" id="nombre_usu">
+              <label class="form-label text-secondary fw-bold">Nombre</label>
+              <input type="text" class="form-control bg-light text-dark border-light-subtle" name="nombreUsu" id="nombre_usu" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-secondary fw-bold"><i class="fa-brands fa-whatsapp text-success me-1"></i> Teléfono (WhatsApp)</label>
+              <input type="text" class="form-control bg-light text-dark border-light-subtle" name="telefonoUsu" placeholder="Ej: +5491122334455">
+            </div>
+            <div class="mb-3">
+              <label class="form-label text-secondary fw-bold"><i class="fa-brands fa-whatsapp text-success me-1"></i> Teléfono 2 (Opcional)</label>
+              <input type="text" class="form-control bg-light text-dark border-light-subtle" name="telefonoUsu2" placeholder="Ej: +5491122334455">
             </div>
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Guardar</button>
+          <div class="modal-footer border-top border-light-subtle">
+            <button type="submit" class="btn btn-accent rounded-pill w-100">Guardar Usuario</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
-
-
-  <!-- Modal Editar Impuesto-->
-  <div class="modal fade" id="modalEditar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar impuesto</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+  <!-- Modal Editar Usuario-->
+  <div class="modal fade" id="modalEditarUsuario" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content sre-card rounded-4 border-1 border-light-subtle">
+        <div class="modal-header border-bottom border-light-subtle">
+          <h5 class="modal-title fw-bold text-accent"><i class="fa-solid fa-user-pen me-2"></i> Editar Usuario</h5>
+          <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
         </div>
-
-        <form name="formSubirPresupuestos" action="ajax/editar.php" id="formEditarImpuestos" enctype="multipart/form-data" method="POST">
-          <div class="modal-body">
-            <input type="text" hidden="true" name="idImpEdit" id="id_imp_edit" value="">
-            <input type="text" hidden="true" name="tiene_acta" id="tieneActa" value="">
+        <form action="ajax/editarUsuario.php" id="formEditarUsuario" method="POST">
+          <div class="modal-body text-dark">
+            <input type="hidden" name="id_usuario" id="edit_id_usu">
             <div class="mb-3">
-              <label for="nombre_imp_edit" class="form-label">Nombre Impuesto</label>
-              <input type="text" class="form-control" name="nombreImpEdit" id="nombre_imp_edit">
+              <label class="form-label text-secondary fw-bold">Nombre</label>
+              <input type="text" class="form-control bg-light text-dark border-light-subtle" name="nombreUsu" id="edit_nombre_usu" required>
             </div>
-
             <div class="mb-3">
-              <label for="proveedor_imp_edit" class="form-label">Proveedor:</label>
-              <input type="text" class="form-control" name="proveedorImpEdit" id="proveedor_imp_edit">
+              <label class="form-label text-secondary fw-bold"><i class="fa-brands fa-whatsapp text-success me-1"></i> Teléfono (WhatsApp)</label>
+              <input type="text" class="form-control bg-light text-dark border-light-subtle" name="telefonoUsu" id="edit_telefono_usu" placeholder="Ej: +5491122334455">
             </div>
-
             <div class="mb-3">
-              <label for="">Tipo impuesto:</label>
-              <select type="text" class="form-control" name="tipoImpEdit" id="tipo_imp_edit" placeholder="Marca disco">
-                <option value="AGUA">AGUA</option>
-                <option value="GAS">GAS</option>
-                <option value="IMPUESTO INMOBILIARIO">IMPUESTO INMOBILIARIO</option>
-                <option value="TASAS MUNICIPALES">TASAS MUNICIPALES</option>
-                <option value="INTERNET">INTERNET</option>
-                <option value="LUZ">LUZ</option>
-              </select>
+              <label class="form-label text-secondary fw-bold"><i class="fa-brands fa-whatsapp text-success me-1"></i> Teléfono 2 (Opcional)</label>
+              <input type="text" class="form-control bg-light text-dark border-light-subtle" name="telefonoUsu2" id="edit_telefono2_usu" placeholder="Ej: +5491122334455">
             </div>
-
-            <div class="mb-3">
-              <label for="fecha_vencimiento_imp_edit">Fecha vencimiento:</label>
-              <input type="date" class="form-control" value="<?php echo date('Y-m-d'); ?>" name="fechaVencimientoImpEdit" id="fecha_vencimiento_imp_edit" required>
-            </div>
-
-            <div class="mb-3">
-              <label for="costo_imp_edit" class="form-label">Costo:</label>
-              <input type="number" class="form-control" step="any" name="costoImpEdit" id="costo_imp_edit">
-            </div>
-
-            <div class="mt-3">
-              <div class="" id="factMsg"></div>
-              <label for="factura_imp_edit" class="form-label">Subir Acta de Entrega:</label>
-              <input type="file" class="form-control" name="facturaImpEdit" id="factura_imp_edit" placeholder="">
-            </div>
-
-
-
           </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-            <button type="submit" class="btn btn-primary">Submit</button>
+          <div class="modal-footer border-top border-light-subtle">
+            <button type="submit" class="btn btn-accent rounded-pill w-100">Guardar Cambios</button>
           </div>
         </form>
       </div>
     </div>
   </div>
 
+  <!-- Modal Editar Impuesto -->
+  <div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content sre-card rounded-4 border-1 border-light-subtle">
+        <div class="modal-header border-bottom border-light-subtle">
+          <h5 class="modal-title fw-bold text-accent"><i class="fa-solid fa-pen-to-square me-2"></i> Editar Gasto</h5>
+          <button type="button" class="btn-close btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <form action="ajax/editar.php" id="formEditarImpuestos" enctype="multipart/form-data" method="POST">
+          <div class="modal-body text-dark">
+            <input type="hidden" name="idImpEdit" id="id_imp_edit">
+            <input type="hidden" name="tiene_acta" id="tieneActa">
+            
+            <div class="row g-3">
+              <div class="col-12">
+                <label class="form-label text-secondary fw-bold">Servicio</label>
+                <input type="text" class="form-control bg-light text-dark border-light-subtle" name="nombreImpEdit" id="nombre_imp_edit">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Proveedor</label>
+                <input type="text" class="form-control bg-light text-dark border-light-subtle" name="proveedorImpEdit" id="proveedor_imp_edit">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Tipo</label>
+                <select class="form-select bg-light text-dark border-light-subtle" name="tipoImpEdit" id="tipo_imp_edit">
+                  <option value="AGUA">Agua</option>
+                  <option value="GAS">Gas</option>
+                  <option value="IMPUESTO INMOBILIARIO">Inmobiliario</option>
+                  <option value="TASAS MUNICIPALES">Municipal</option>
+                  <option value="INTERNET">Internet</option>
+                  <option value="LUZ">Luz</option>
+                  <option value="OTROS">Otros</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Vencimiento</label>
+                <input type="date" class="form-control bg-light text-dark border-light-subtle" name="fechaVencimientoImpEdit" id="fecha_vencimiento_imp_edit">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label text-secondary fw-bold">Importe</label>
+                <input type="number" step="0.01" class="form-control bg-light text-dark border-light-subtle" name="costoImpEdit" id="costo_imp_edit">
+              </div>
+              <div class="col-12 mt-3 text-center" id="factMsg"></div>
+              <div class="col-12">
+                <label class="form-label text-secondary fw-bold">Reemplazar Comprobante</label>
+                <input type="file" class="form-control bg-light text-dark border-light-subtle" name="facturaImpEdit" id="factura_imp_edit">
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer border-top border-light-subtle">
+            <button type="button" class="btn btn-outline-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" class="btn btn-accent rounded-pill px-4">Actualizar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
 
-
-
-  <div id="menuContextual" style="display: none; position: absolute;" class="menu-contextual">
-    <ul>
-      <li id="editar">Editar</li>
-      <li id="eliminar">Eliminar</li>
-      <li id="pagado">Pagado</li>
-      <li id="registrar">Registrar</li>
+  <div id="menuContextual" class="menu-contextual bg-light border-light-subtle shadow-lg">
+    <ul class="m-0 p-0 text-dark">
+      <li id="editar" class="text-accent py-2 px-3 border-bottom border-light-subtle"><i class="fa-solid fa-pen me-2"></i>Editar</li>
+      <li id="eliminar" class="text-danger py-2 px-3"><i class="fa-solid fa-trash me-2"></i>Eliminar</li>
     </ul>
   </div>
+
+  <!-- Scripts -->
+  <script>
+    const IS_ADMIN = <?php echo $isAdmin ? 'true' : 'false'; ?>;
+  </script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Librería para el Confeti -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <script src="js/app.js"></script>
 </body>
-
 </html>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-
-    trearImpuestos();
-    traerUsuarios();
-    botonesUsuarios();
-  })
-
-  function botonesUsuarios(){
-   const action = "buscar";
-
-  $.ajax({
-    url: "../ajax/traerUsuariosBotones.php",
-    type: "POST",
-    data: { action: action },
-    beforeSend: function () {},
-    success: function (response) {
-      // console.log(response);
-      if (response.status && response.status === "notData") {
-        // Manejo cuando no hay datos
-      } else {
-        var js = JSON.parse(response);
-        var cards1 = "";
-
-          for (var i = 0; i < js.length; i++) {
-            
-            // js[i].nombre_imp
-            // Crear checkbox para cada usuario al ingresar un nuevo impuesto
-            cards1 +=
-              '<div class="mr-3"><input type="checkbox" class="btn-check" id="btn-check-' +
-              js[i].id_usuario +
-              '" data-id="' +
-              js[i].id_usuario +
-              '" autocomplete="off">' +
-              '<label class="btn btn-outline-success" for="btn-check-' +
-              js[i].id_usuario +
-              '">' +
-              js[i].nombre_usuario +
-              "</label></div>";
-
-          }
-
-        }
-         // Actualizar el HTML de la página
-         $("#listaUsu").html(cards1);
-
-    },
-    error: function (error) {
-      console.error("Error al enviar la solicitud de pago:", error);
-      alert("Hubo un problema al enviar el pago. Intenta nuevamente.");
-    }
-  });
-}
-</script>

@@ -1,0 +1,30 @@
+# Archivos de usuario
+facturas/*
+!facturas/.gitkeep
+
+# Backups y SQL (excluyendo la inicialización de Docker)
+*.sql
+!mysql-dump/
+!mysql-dump/*.sql
+
+# Node y WhatsApp Bot
+whatsapp-bot/node_modules/
+whatsapp-bot/auth/
+whatsapp-bot/.wwebjs_auth/
+whatsapp-bot/.wwebjs_cache/
+.wwebjs_auth/
+.wwebjs_cache/
+
+# Archivos de prueba y backups manuales
+*_old
+test_*.php
+check_*.php
+ajax/test_upload.php
+
+# Originales pesados
+img/original_videos/
+img/*_old.png
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
