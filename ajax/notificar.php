@@ -10,8 +10,27 @@ if($_POST){
         $mes = isset($_POST['mes']) ? mysqli_real_escape_string($conexion, $_POST['mes']) : date('m');
         $anio = isset($_POST['anio']) ? mysqli_real_escape_string($conexion, $_POST['anio']) : date('Y');
 
+        $mes_anterior = (int)$mes - 1;
+        $anio_anterior = (int)$anio;
+        if ($mes_anterior == 0) {
+            $mes_anterior = 12;
+            $anio_anterior--;
+        }
+
+        // Obtener datos del mes anterior para comparar
+        $query_prev = mysqli_query($conexion, "SELECT usu_imp.id_usu1 as id_usuario, imp.nombre_imp, usu_imp.monto FROM `usu_imp` 
+        INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp
+        WHERE MONTH(imp.fecha_vencimiento_imp) = '$mes_anterior' AND YEAR(imp.fecha_vencimiento_imp) = '$anio_anterior'");
+        
+        $prev_data = array();
+        if($query_prev) {
+            while($rp = mysqli_fetch_assoc($query_prev)){
+                $prev_data[$rp['id_usuario']][$rp['nombre_imp']] = $rp['monto'];
+            }
+        }
+
         // Buscar usuarios y lo que deben
-        $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, telefono, nombre_imp, monto, id_imp, usu_imp.estado_pago as pago FROM `usu_imp` 
+        $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, telefono, telefono2, nombre_imp, monto, id_imp, usu_imp.estado_pago as pago FROM `usu_imp` 
         INNER JOIN usuarios ON usu_imp.id_usu1=usuarios.id_usuario
         INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp
         WHERE MONTH(imp.fecha_vencimiento_imp) = '$mes' AND YEAR(imp.fecha_vencimiento_imp) = '$anio'");
@@ -24,13 +43,30 @@ if($_POST){
                     $usuarios[$id] = array(
                         'nombre' => $row['nombre_usuario'],
                         'telefono' => $row['telefono'],
+                        'telefono2' => $row['telefono2'],
                         'total' => 0,
-                        'pendientes' => array()
+                        'pendientes' => array(),
+                        'incrementos' => array()
                     );
                 }
+                
+                $monto_actual = $row['monto'];
+                $nombre_imp = $row['nombre_imp'];
+                $str_item = $nombre_imp . ' ($' . number_format($monto_actual, 2) . ')';
+
+                // Calcular si hubo incremento
+                if (isset($prev_data[$id][$nombre_imp])) {
+                    $monto_previo = $prev_data[$id][$nombre_imp];
+                    if ($monto_actual > $monto_previo) {
+                        $dif = $monto_actual - $monto_previo;
+                        $porcentaje = ($monto_previo > 0) ? round(($dif / $monto_previo) * 100) : 100;
+                        $usuarios[$id]['incrementos'][] = "📈 *$nombre_imp* subió *$" . number_format($dif, 2) . "* (+$porcentaje%)";
+                    }
+                }
+
                 if($row['pago'] != '1' && $row['pago'] != 'true' && $row['pago'] != 'PAGADO' && $row['pago'] != 'SI'){
-                    $usuarios[$id]['total'] += $row['monto'];
-                    $usuarios[$id]['pendientes'][] = $row['nombre_imp'] . ' ($' . number_format($row['monto'], 2) . ')';
+                    $usuarios[$id]['total'] += $monto_actual;
+                    $usuarios[$id]['pendientes'][] = $str_item;
                 }
             }
 
@@ -43,6 +79,9 @@ if($_POST){
                     $mensaje .= "Llegó ese hermoso momento del mes... ¡Pagar las cuentas de la casa! 💸🏠\n\n";
                     $mensaje .= "Esta vez te toca poner: *$" . number_format($u['total'], 2) . "*\n\n";
                     $mensaje .= "El detalle de los daños 📄:\n- " . implode("\n- ", $u['pendientes']) . "\n\n";
+                    if (!empty($u['incrementos'])) {
+                        $mensaje .= "⚠️ *Atención a los aumentos de este mes*:\n- " . implode("\n- ", $u['incrementos']) . "\n\n";
+                    }
                     $mensaje .= "Aflojá la billetera cuando puedas así liquidamos todo rápido. ¡Gracias, familia! ❤️";
 
                     if(enviarWhatsApp($u['telefono'], $mensaje)){
@@ -74,6 +113,25 @@ if($_POST){
         $mes = isset($_POST['mes']) ? mysqli_real_escape_string($conexion, $_POST['mes']) : date('m');
         $anio = isset($_POST['anio']) ? mysqli_real_escape_string($conexion, $_POST['anio']) : date('Y');
 
+        $mes_anterior = (int)$mes - 1;
+        $anio_anterior = (int)$anio;
+        if ($mes_anterior == 0) {
+            $mes_anterior = 12;
+            $anio_anterior--;
+        }
+
+        // Obtener datos del mes anterior para comparar
+        $query_prev = mysqli_query($conexion, "SELECT imp.nombre_imp, usu_imp.monto FROM `usu_imp` 
+        INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp 
+        WHERE MONTH(imp.fecha_vencimiento_imp) = '$mes_anterior' AND YEAR(imp.fecha_vencimiento_imp) = '$anio_anterior' AND usu_imp.id_usu1 = '$id_usuario'");
+        
+        $prev_data = array();
+        if($query_prev) {
+            while($rp = mysqli_fetch_assoc($query_prev)){
+                $prev_data[$rp['nombre_imp']] = $rp['monto'];
+            }
+        }
+
         $query_select = mysqli_query($conexion, "SELECT id_usuario, nombre_usuario, telefono, telefono2, nombre_imp, monto, usu_imp.estado_pago as pago FROM `usu_imp` 
         INNER JOIN usuarios ON usu_imp.id_usu1=usuarios.id_usuario
         INNER JOIN imp ON usu_imp.id_imp1=imp.id_imp
@@ -82,6 +140,7 @@ if($_POST){
         if($query_select && mysqli_num_rows($query_select) > 0){
             $total = 0;
             $pendientes = array();
+            $incrementos = array();
             $nombre = "";
             $telefono = "";
             $telefono2 = "";
@@ -90,17 +149,36 @@ if($_POST){
                 $nombre = $row['nombre_usuario'];
                 $telefono = $row['telefono'];
                 $telefono2 = $row['telefono2'];
+                
+                $monto_actual = $row['monto'];
+                $nombre_imp = $row['nombre_imp'];
+                $str_item = $nombre_imp . ' ($' . number_format($monto_actual, 2) . ')';
+
+                if (isset($prev_data[$nombre_imp])) {
+                    $monto_previo = $prev_data[$nombre_imp];
+                    if ($monto_actual > $monto_previo) {
+                        $dif = $monto_actual - $monto_previo;
+                        $porcentaje = ($monto_previo > 0) ? round(($dif / $monto_previo) * 100) : 100;
+                        $incrementos[] = "📈 *$nombre_imp* subió *$" . number_format($dif, 2) . "* (+$porcentaje%)";
+                    }
+                }
+
                 if($row['pago'] != '1' && $row['pago'] != 'true' && $row['pago'] != 'PAGADO' && $row['pago'] != 'SI'){
-                    $total += $row['monto'];
-                    $pendientes[] = $row['nombre_imp'] . ' ($' . number_format($row['monto'], 2) . ')';
+                    $total += $monto_actual;
+                    $pendientes[] = $str_item;
                 }
             }
             
             if($total > 0){
                 $mensaje = "Hola! 👀👋 Paso a recordarte (antes de mandar a los cobradores 🕵️‍♂️) los gastos de la casa.\n\n";
                 $mensaje .= "El saldo pendiente es de: *$" . number_format($total, 2) . "*\n\n";
-                $mensaje .= "Te paso los detalles:\n\n";
-                $mensaje .= implode("\n", $pendientes) . "\n\n";
+                $mensaje .= "Te paso los detalles:\n";
+                $mensaje .= "- " . implode("\n- ", $pendientes) . "\n\n";
+                
+                if (!empty($incrementos)) {
+                    $mensaje .= "⚠️ *Atención a los aumentos de este mes*:\n- " . implode("\n- ", $incrementos) . "\n\n";
+                }
+
                 $mensaje .= "Transferí los pesitos cuando puedas así quedamos al dia.. Abrazo! 🫂";
                 
                 $enviado = false;
