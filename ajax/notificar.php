@@ -70,7 +70,7 @@ if($_POST){
                         $porcentaje = ($costo_total_previo > 0) ? round(($dif_total / $costo_total_previo) * 100) : 100;
                         
                         $usuarios[$id]['incrementos_totales'][] = "*$nombre_imp:* de $" . number_format($costo_total_previo, 2) . " a $" . number_format($costo_total_actual, 2) . " (+$porcentaje%)";
-                        $usuarios[$id]['incrementos_individuales'][] = "*$nombre_imp:* de $" . number_format($monto_previo, 2) . " a $" . number_format($monto_actual, 2) . " (+$" . number_format($dif_individual, 2) . ")";
+                        $usuarios[$id]['incrementos_individuales'][] = "*$nombre_imp:* +$" . number_format($dif_individual, 2);
                     }
                 }
 
@@ -97,7 +97,7 @@ if($_POST){
                         $mensaje .= "⚠️ *Aumentos en lo que pagas:*\n- " . implode("\n- ", $u['incrementos_individuales']) . "\n\n";
                     }
                     
-                    $mensaje .= "Gracias! ❤️\n\nPodés ver más detalles en la app: https://pagospilar.dpdns.org\n_Mensaje generado por la App Pagos Pilar_";
+                    $mensaje .= "Gracias! ❤️\n\n_Mensaje generado por la App Pagos Pilar_\nhttps://pagospilar.dpdns.org";
 
                     if(enviarWhatsApp($u['telefono'], $mensaje)){
                         $enviadosWhatsApp++;
@@ -184,7 +184,7 @@ if($_POST){
                         $porcentaje = ($costo_total_previo > 0) ? round(($dif_total / $costo_total_previo) * 100) : 100;
                         
                         $incrementos_totales[] = "*$nombre_imp:* de $" . number_format($costo_total_previo, 2) . " a $" . number_format($costo_total_actual, 2) . " (+$porcentaje%)";
-                        $incrementos_individuales[] = "*$nombre_imp:* de $" . number_format($monto_previo, 2) . " a $" . number_format($monto_actual, 2) . " (+$" . number_format($dif_individual, 2) . ")";
+                        $incrementos_individuales[] = "*$nombre_imp:* +$" . number_format($dif_individual, 2);
                     }
                 }
 
@@ -207,7 +207,7 @@ if($_POST){
                     $mensaje .= "⚠️ *Aumentos en lo que pagas:*\n- " . implode("\n- ", $incrementos_individuales) . "\n\n";
                 }
 
-                $mensaje .= "Gracias! ❤️\n\nPodés ver más detalles en la app: https://pagospilar.dpdns.org\n_Mensaje generado por la App Pagos Pilar_";
+                $mensaje .= "Gracias! ❤️\n\n_Mensaje generado por la App Pagos Pilar_\nhttps://pagospilar.dpdns.org";
                 
                 $enviado = false;
                 if(enviarWhatsApp($telefono, $mensaje)){
