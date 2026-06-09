@@ -69,8 +69,8 @@ if($_POST){
                         $dif_total = $costo_total_actual - $costo_total_previo;
                         $porcentaje = ($costo_total_previo > 0) ? round(($dif_total / $costo_total_previo) * 100) : 100;
                         
-                        $usuarios[$id]['incrementos_totales'][] = "📈 *$nombre_imp:* de $" . number_format($costo_total_previo, 2) . " a $" . number_format($costo_total_actual, 2) . " (+$porcentaje%)";
-                        $usuarios[$id]['incrementos_individuales'][] = "💰 *$nombre_imp:* de $" . number_format($monto_previo, 2) . " a $" . number_format($monto_actual, 2) . " (+$" . number_format($dif_individual, 2) . ")";
+                        $usuarios[$id]['incrementos_totales'][] = "*$nombre_imp:* de $" . number_format($costo_total_previo, 2) . " a $" . number_format($costo_total_actual, 2) . " (+$porcentaje%)";
+                        $usuarios[$id]['incrementos_individuales'][] = "*$nombre_imp:* de $" . number_format($monto_previo, 2) . " a $" . number_format($monto_actual, 2) . " (+$" . number_format($dif_individual, 2) . ")";
                     }
                 }
 
@@ -86,18 +86,18 @@ if($_POST){
             foreach($usuarios as $u){
                 if($u['total'] > 0){
                     $mensaje = "¡Hola *" . $u['nombre'] . "*!\n";
-                    $mensaje .= "Es momento de pagar los gastos de la casa.\n\n";
+                    $mensaje .= "Es momento de pagar los gastos de tu casa.\n\n";
                     $mensaje .= "Tu total es: *$" . number_format($u['total'], 2) . "*\n\n";
                     $mensaje .= "Detalle:\n- " . implode("\n- ", $u['pendientes']) . "\n\n";
                     
                     if (!empty($u['incrementos_totales'])) {
-                        $mensaje .= "⚠️ *Aumentos de la factura total:*\n- " . implode("\n- ", $u['incrementos_totales']) . "\n\n";
+                        $mensaje .= "⚠️ *Aumentos en las facturas:*\n- " . implode("\n- ", $u['incrementos_totales']) . "\n\n";
                     }
                     if (!empty($u['incrementos_individuales'])) {
-                        $mensaje .= "⚠️ *Aumentos de tu parte:*\n- " . implode("\n- ", $u['incrementos_individuales']) . "\n\n";
+                        $mensaje .= "⚠️ *Aumentos en lo que pagas:*\n- " . implode("\n- ", $u['incrementos_individuales']) . "\n\n";
                     }
                     
-                    $mensaje .= "¡Gracias! ❤️\n_Mensaje generado por la App Pagos Pilar_";
+                    $mensaje .= "Gracias! ❤️\n\nPodés ver más detalles en la app: https://pagospilar.dpdns.org\n_Mensaje generado por la App Pagos Pilar_";
 
                     if(enviarWhatsApp($u['telefono'], $mensaje)){
                         $enviadosWhatsApp++;
@@ -183,8 +183,8 @@ if($_POST){
                         $dif_total = $costo_total_actual - $costo_total_previo;
                         $porcentaje = ($costo_total_previo > 0) ? round(($dif_total / $costo_total_previo) * 100) : 100;
                         
-                        $incrementos_totales[] = "📈 *$nombre_imp:* de $" . number_format($costo_total_previo, 2) . " a $" . number_format($costo_total_actual, 2) . " (+$porcentaje%)";
-                        $incrementos_individuales[] = "💰 *$nombre_imp:* de $" . number_format($monto_previo, 2) . " a $" . number_format($monto_actual, 2) . " (+$" . number_format($dif_individual, 2) . ")";
+                        $incrementos_totales[] = "*$nombre_imp:* de $" . number_format($costo_total_previo, 2) . " a $" . number_format($costo_total_actual, 2) . " (+$porcentaje%)";
+                        $incrementos_individuales[] = "*$nombre_imp:* de $" . number_format($monto_previo, 2) . " a $" . number_format($monto_actual, 2) . " (+$" . number_format($dif_individual, 2) . ")";
                     }
                 }
 
@@ -196,18 +196,18 @@ if($_POST){
             
             if($total > 0){
                 $mensaje = "¡Hola *" . $nombre . "*!\n";
-                $mensaje .= "Es momento de pagar los gastos de la casa.\n\n";
+                $mensaje .= "Es momento de pagar los gastos de tu casa.\n\n";
                 $mensaje .= "Tu total es: *$" . number_format($total, 2) . "*\n\n";
                 $mensaje .= "Detalle:\n- " . implode("\n- ", $pendientes) . "\n\n";
                 
                 if (!empty($incrementos_totales)) {
-                    $mensaje .= "⚠️ *Aumentos de la factura total:*\n- " . implode("\n- ", $incrementos_totales) . "\n\n";
+                    $mensaje .= "⚠️ *Aumentos en las facturas:*\n- " . implode("\n- ", $incrementos_totales) . "\n\n";
                 }
                 if (!empty($incrementos_individuales)) {
-                    $mensaje .= "⚠️ *Aumentos de tu parte:*\n- " . implode("\n- ", $incrementos_individuales) . "\n\n";
+                    $mensaje .= "⚠️ *Aumentos en lo que pagas:*\n- " . implode("\n- ", $incrementos_individuales) . "\n\n";
                 }
 
-                $mensaje .= "¡Gracias! ❤️\n_Mensaje generado por la App Pagos Pilar_";
+                $mensaje .= "Gracias! ❤️\n\nPodés ver más detalles en la app: https://pagospilar.dpdns.org\n_Mensaje generado por la App Pagos Pilar_";
                 
                 $enviado = false;
                 if(enviarWhatsApp($telefono, $mensaje)){
