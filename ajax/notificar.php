@@ -60,7 +60,7 @@ if($_POST){
                     if ($monto_actual > $monto_previo) {
                         $dif = $monto_actual - $monto_previo;
                         $porcentaje = ($monto_previo > 0) ? round(($dif / $monto_previo) * 100) : 100;
-                        $usuarios[$id]['incrementos'][] = "📈 *$nombre_imp* subió *$" . number_format($dif, 2) . "* (+$porcentaje%)";
+                        $usuarios[$id]['incrementos'][] = "*$nombre_imp* subió *$" . number_format($dif, 2) . "* (+$porcentaje%)";
                     }
                 }
 
@@ -82,7 +82,7 @@ if($_POST){
                     if (!empty($u['incrementos'])) {
                         $mensaje .= "⚠️ *Atención a los aumentos de este mes*:\n- " . implode("\n- ", $u['incrementos']) . "\n\n";
                     }
-                    $mensaje .= "Aflojá la billetera cuando puedas así liquidamos todo rápido. ¡Gracias, familia! ❤️";
+                    $mensaje .= "Aflojá la billetera cuando puedas así liquidamos todo rápido. ¡Gracias, familia! ❤️\n\nPodés ver más detalles ingresando a la app: https://pagospilar.dpdns.org";
 
                     if(enviarWhatsApp($u['telefono'], $mensaje)){
                         $enviadosWhatsApp++;
@@ -159,7 +159,7 @@ if($_POST){
                     if ($monto_actual > $monto_previo) {
                         $dif = $monto_actual - $monto_previo;
                         $porcentaje = ($monto_previo > 0) ? round(($dif / $monto_previo) * 100) : 100;
-                        $incrementos[] = "📈 *$nombre_imp* subió *$" . number_format($dif, 2) . "* (+$porcentaje%)";
+                        $incrementos[] = "*$nombre_imp* subió *$" . number_format($dif, 2) . "* (+$porcentaje%)";
                     }
                 }
 
@@ -179,7 +179,7 @@ if($_POST){
                     $mensaje .= "⚠️ *Atención a los aumentos de este mes*:\n- " . implode("\n- ", $incrementos) . "\n\n";
                 }
 
-                $mensaje .= "Transferí los pesitos cuando puedas así quedamos al dia.. Abrazo! 🫂";
+                $mensaje .= "Transferí los pesitos cuando puedas así quedamos al dia.. Abrazo! 🫂\n\nPodés ver más detalles ingresando a la app: https://pagospilar.dpdns.org";
                 
                 $enviado = false;
                 if(enviarWhatsApp($telefono, $mensaje)){
