@@ -170,7 +170,8 @@ if($_POST){
             }
             
             if($total > 0){
-                $mensaje = "Hola! 👀👋 Paso a recordarte (antes de mandar a los cobradores 🕵️‍♂️) los gastos de la casa.\n\n";
+                $mensaje = "¡Buenas buenas, *" . $nombre . "*! 👋\n";
+                $mensaje .= "Llegó ese hermoso momento del mes... ¡Pagar las cuentas de la casa! 💸🏠\n\n";
                 $mensaje .= "El saldo pendiente es de: *$" . number_format($total, 2) . "*\n\n";
                 $mensaje .= "Te paso los detalles:\n";
                 $mensaje .= "- " . implode("\n- ", $pendientes) . "\n\n";
@@ -179,7 +180,7 @@ if($_POST){
                     $mensaje .= "⚠️ *Atención a los aumentos de este mes*:\n- " . implode("\n- ", $incrementos) . "\n\n";
                 }
 
-                $mensaje .= "Transferí los pesitos cuando puedas así quedamos al dia.. Abrazo! 🫂\n\nPodés ver más detalles ingresando a la app: https://pagospilar.dpdns.org";
+                $mensaje .= "Aflojá la billetera cuando puedas así liquidamos todo rápido. ¡Gracias, familia! ❤️\n\nPodés ver más detalles ingresando a la app: https://pagospilar.dpdns.org";
                 
                 $enviado = false;
                 if(enviarWhatsApp($telefono, $mensaje)){
