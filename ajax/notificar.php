@@ -97,7 +97,8 @@ if($_POST){
                         $mensaje .= "⚠️ *Aumentos en lo que pagas:*\n- " . implode("\n- ", $u['incrementos_individuales']) . "\n\n";
                     }
                     
-                    $mensaje .= "Alias para transferir:\n*gira.barro*\n\n";
+                    $mensaje .= "Alias para transferir: *gira.barro*\n";
+                    $mensaje .= "Abrir Mercado Pago:\nhttps://link.mercadopago.com.ar/girabarro\n\n";
                     $mensaje .= "Gracias! ❤️\n\n_Mensaje generado por la App Pagos Pilar_\nhttps://pagospilar.dpdns.org";
 
                     if(enviarWhatsApp($u['telefono'], $mensaje)){
@@ -208,7 +209,8 @@ if($_POST){
                     $mensaje .= "⚠️ *Aumentos en lo que pagas:*\n- " . implode("\n- ", $incrementos_individuales) . "\n\n";
                 }
 
-                $mensaje .= "Alias para transferir:\n*gira.barro*\n\n";
+                $mensaje .= "Alias para transferir: *gira.barro*\n";
+                $mensaje .= "Abrir Mercado Pago:\nhttps://link.mercadopago.com.ar/girabarro\n\n";
                 $mensaje .= "Gracias! ❤️\n\n_Mensaje generado por la App Pagos Pilar_\nhttps://pagospilar.dpdns.org";
                 
                 $enviado = false;
