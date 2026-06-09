@@ -9,8 +9,6 @@ services:
       DB_PASS: IT2017petro
       DB_NAME: impuestos
     container_name: php_apache_imp
-    ports:
-      - "80:80"
     volumes:
       - .:/var/www/html
     depends_on:
@@ -25,8 +23,6 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: IT2017petro
       MYSQL_DATABASE: impuestos
-    ports:
-      - "3308:3306"
     volumes:
       - ./mysql-dump:/docker-entrypoint-initdb.d
       - db_data:/var/lib/mysql
@@ -38,8 +34,6 @@ services:
     environment:
       PMA_HOST: db
       MYSQL_ROOT_PASSWORD: IT2017petro
-    ports:
-      - "8082:80"
     depends_on:
       - db
     restart: always
@@ -58,3 +52,7 @@ services:
 
 volumes:
   db_data:
+networks:
+  default:
+    name: red-proxy
+    external: true
